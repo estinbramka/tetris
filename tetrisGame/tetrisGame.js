@@ -1,4 +1,5 @@
 import {html, render} from 'https://esm.run/lit-html@1';
+import { Block } from './Block.js';
 
 class tetrisGame extends HTMLElement {
     constructor() {
@@ -7,7 +8,7 @@ class tetrisGame extends HTMLElement {
         this.state = {};
         this.initState();
         this.draw();
-        this.setupCanvas();
+        this.startGame();
     }
 
     connectedCallback() {
@@ -53,14 +54,31 @@ class tetrisGame extends HTMLElement {
         </div>
         `;
         render(template, this.shadowRoot);
-    }
 
-    setupCanvas (){
         let c = this.shadowRoot.querySelector("#tetrisCanvas");
         let ctx = c.getContext("2d");
-        ctx.beginPath();
-        ctx.arc(95, 50, 40, 0, 2 * Math.PI);
-        ctx.stroke();
+        this.ctx = ctx;
+    }
+
+    startGame() {
+        this.block = new Block('red',0,0,this);
+        window.requestAnimationFrame(this.updateGameAreaBind);
+    }
+
+    update(timeStamp) {
+        //this.block.x = parseInt(timeStamp/1000);
+        this.block.update();
+    }
+
+    clear() {
+        this.ctx.clearRect(0, 0, this.state.canvasDim.width, this.state.canvasDim.height);
+    }
+
+    updateGameAreaBind = this.updateGameArea.bind(this);
+    updateGameArea(timeStamp) {
+        this.clear();
+        this.update(timeStamp);
+        window.requestAnimationFrame(this.updateGameAreaBind);
     }
 }
 

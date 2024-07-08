@@ -1,5 +1,6 @@
 import {html, render} from 'https://esm.run/lit-html@1';
 import { Block } from './Block.js';
+import { COLORS } from './Colors.js';
 
 class tetrisGame extends HTMLElement {
     constructor() {
@@ -44,6 +45,10 @@ class tetrisGame extends HTMLElement {
             width: horizontalBlocksNum,
             height: verticalBlocksNum,
         };
+
+        this.state.timeVars = {
+            lastActivePieceDrop: 0,
+        };
         //console.log(this.state);
     }
 
@@ -61,13 +66,28 @@ class tetrisGame extends HTMLElement {
     }
 
     startGame() {
-        this.block = new Block('red',0,0,this);
+        this.block1 = new Block(COLORS[0],0,0,this);
+        this.block2 = new Block(COLORS[1],1,0,this);
+        this.block3 = new Block(COLORS[2],2,0,this);
+        this.block4 = new Block(COLORS[3],3,0,this);
+        this.block5 = new Block(COLORS[4],4,0,this);
+        this.block6 = new Block(COLORS[5],5,0,this);
+        this.block7 = new Block(COLORS[6],6,0,this);
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
 
-    update(timeStamp) {
-        //this.block.x = parseInt(timeStamp/1000);
-        this.block.update();
+    update(now) {
+        if(!this.state.timeVars.lastActivePieceDrop || now - this.state.timeVars.lastActivePieceDrop >= 1000) {
+            this.state.timeVars.lastActivePieceDrop = now;
+            //this.block1.y++;
+        }
+        this.block1.update();
+        this.block2.update();
+        this.block3.update();
+        this.block4.update();
+        this.block5.update();
+        this.block6.update();
+        this.block7.update();
     }
 
     clear() {

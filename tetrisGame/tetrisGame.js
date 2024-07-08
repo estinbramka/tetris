@@ -1,11 +1,12 @@
 import {html, render} from 'https://esm.run/lit-html@1';
-import { Block } from './Block.js';
-import { COLORS } from './Colors.js';
+import { GameState } from './GameState.js';
+import { setupGameState } from './testTetrisGame.js';
 
 class tetrisGame extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
+        this.gameState = new GameState();
         this.state = {};
         this.initState();
         this.draw();
@@ -66,13 +67,7 @@ class tetrisGame extends HTMLElement {
     }
 
     startGame() {
-        this.block1 = new Block(COLORS[0],0,0,this);
-        this.block2 = new Block(COLORS[1],1,0,this);
-        this.block3 = new Block(COLORS[2],2,0,this);
-        this.block4 = new Block(COLORS[3],3,0,this);
-        this.block5 = new Block(COLORS[4],4,0,this);
-        this.block6 = new Block(COLORS[5],5,0,this);
-        this.block7 = new Block(COLORS[6],6,0,this);
+        setupGameState(this,0);
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
 
@@ -81,13 +76,7 @@ class tetrisGame extends HTMLElement {
             this.state.timeVars.lastActivePieceDrop = now;
             //this.block1.y++;
         }
-        this.block1.update();
-        this.block2.update();
-        this.block3.update();
-        this.block4.update();
-        this.block5.update();
-        this.block6.update();
-        this.block7.update();
+        this.gameState.renderBlocks();
     }
 
     clear() {

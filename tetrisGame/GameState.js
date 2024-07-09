@@ -5,6 +5,10 @@ export class GameState {
         this.blockList = [];
     }
 
+    addTetromino(Tetromino) {
+        this.addBlocks(Tetromino.blockList);
+    }
+
     addBlocks(blocks) {
         blocks.forEach(bl => {
             if (bl instanceof Block) {

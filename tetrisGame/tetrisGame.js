@@ -1,6 +1,7 @@
 import {html, render} from 'https://esm.run/lit-html@1';
 import { GameState } from './GameState.js';
 import { setupGameState } from './testTetrisGame.js';
+import { I_Block, J_Block, L_Block, O_Block, S_Block, T_Block, Z_Block } from './Tetrominoes.js';
 
 class tetrisGame extends HTMLElement {
     constructor() {
@@ -50,6 +51,11 @@ class tetrisGame extends HTMLElement {
         this.state.timeVars = {
             lastActivePieceDrop: 0,
         };
+
+        this.state.tetromino = {
+            current: null,
+            next: null,
+        }
         //console.log(this.state);
     }
 
@@ -68,13 +74,19 @@ class tetrisGame extends HTMLElement {
 
     startGame() {
         setupGameState(this,0);
+        this.state.tetromino.current = new Z_Block(this);
+        this.state.tetromino.current.softDrop();
+        this.state.tetromino.current.softDrop();
+        this.gameState.addTetromino(this.state.tetromino.current);
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
 
     update(now) {
         if(!this.state.timeVars.lastActivePieceDrop || now - this.state.timeVars.lastActivePieceDrop >= 1000) {
             this.state.timeVars.lastActivePieceDrop = now;
-            //this.block1.y++;
+            //this.state.tetromino.current.rotateRight();
+            this.state.tetromino.current.rotateLeft();
+            //this.state.tetromino.current.softDrop();
         }
         this.gameState.renderBlocks();
     }

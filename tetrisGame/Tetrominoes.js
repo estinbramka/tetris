@@ -2,8 +2,15 @@ import { Block } from "./Block.js";
 import { COLORS } from "./Colors.js";
 
 class Tetromino {
-    constructor() {
+    constructor(tetrisGame) {
+        this.tetrisGame = tetrisGame;
+        this.intervalID = null;
         this.blockList = [];
+    }
+
+    childConstructorComplete() {
+        this.defaultDrop();
+        this.checkGameOver();
     }
 
     rotateRight() {
@@ -33,14 +40,36 @@ class Tetromino {
         });
     }
 
+    defaultDrop() {
+        clearInterval(this.intervalID);
+        this.intervalID = setInterval(() => {
+            this.blockList.forEach((bl)=> bl.y++);
+            this.tetrisGame.gameState.checkCollision(this.blockList);
+        }, this.tetrisGame.state.dropIntervalDelay.default);
+    }
+
     softDrop() {
-        this.blockList.forEach((bl)=> bl.y++);
+        clearInterval(this.intervalID);
+        this.intervalID = setInterval(() => {
+            this.blockList.forEach((bl)=> bl.y++);
+        }, this.tetrisGame.state.dropIntervalDelay.soft);
+    }
+
+    hardDrop() {
+        clearInterval(this.intervalID);
+        this.intervalID = setInterval(() => {
+            this.blockList.forEach((bl)=> bl.y++);
+        }, this.tetrisGame.state.dropIntervalDelay.hard);
+    }
+
+    checkGameOver() {
+        console.log('checkGameOver');
     }
 }
 
 export class I_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[4], 3, 0, tetrisGame);
         this.blockList.push(block);
@@ -52,6 +81,7 @@ export class I_Block extends Tetromino {
         block = new Block(COLORS[4], 6, 0, tetrisGame);
         this.blockList.push(block);
         this.isHorizontal = true;
+        this.childConstructorComplete();
     }
 
     rotateRight() {this.sameRotate()}
@@ -72,7 +102,7 @@ export class I_Block extends Tetromino {
 
 export class J_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[5], 3, 0, tetrisGame);
         this.blockList.push(block);
@@ -83,12 +113,13 @@ export class J_Block extends Tetromino {
         this.blockList.push(block);
         block = new Block(COLORS[5], 5, 1, tetrisGame);
         this.blockList.push(block);
+        this.childConstructorComplete();
     }
 }
 
 export class L_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[1], 3, 0, tetrisGame);
         this.blockList.push(block);
@@ -99,12 +130,13 @@ export class L_Block extends Tetromino {
         this.blockList.push(block);
         block = new Block(COLORS[1], 3, 1, tetrisGame);
         this.blockList.push(block);
+        this.childConstructorComplete();
     }
 }
 
 export class O_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[2], 5, 1, tetrisGame);
         this.blockList.push(block);
@@ -115,6 +147,7 @@ export class O_Block extends Tetromino {
         this.blockList.push(block);
         block = new Block(COLORS[2], 4, 1, tetrisGame);
         this.blockList.push(block);
+        this.childConstructorComplete();
     }
 
     rotateRight() {}
@@ -124,7 +157,7 @@ export class O_Block extends Tetromino {
 
 export class S_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[3], 4, 1, tetrisGame);
         this.blockList.push(block);
@@ -136,6 +169,7 @@ export class S_Block extends Tetromino {
         block = new Block(COLORS[3], 3, 1, tetrisGame);
         this.blockList.push(block);
         this.isHorizontal = true;
+        this.childConstructorComplete();
     }
 
     rotateRight() {this.sameRotate()}
@@ -156,7 +190,7 @@ export class S_Block extends Tetromino {
 
 export class T_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[6], 3, 0, tetrisGame);
         this.blockList.push(block);
@@ -167,12 +201,13 @@ export class T_Block extends Tetromino {
         this.blockList.push(block);
         block = new Block(COLORS[6], 4, 1, tetrisGame);
         this.blockList.push(block);
+        this.childConstructorComplete();
     }
 }
 
 export class Z_Block extends Tetromino {
     constructor(tetrisGame) {
-        super();
+        super(tetrisGame);
         let block;
         block = new Block(COLORS[0], 4, 1, tetrisGame);
         this.blockList.push(block);
@@ -184,6 +219,7 @@ export class Z_Block extends Tetromino {
         block = new Block(COLORS[0], 3, 0, tetrisGame);
         this.blockList.push(block);
         this.isHorizontal = true;
+        this.childConstructorComplete();
     }
 
     rotateRight() {this.sameRotate()}

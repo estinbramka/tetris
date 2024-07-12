@@ -52,6 +52,12 @@ class tetrisGame extends HTMLElement {
             lastActivePieceDrop: 0,
         };
 
+        this.state.dropIntervalDelay = {
+            default: 1000,
+            soft: 300,
+            hard: 0,
+        };
+
         this.state.tetromino = {
             current: null,
             next: null,
@@ -75,8 +81,8 @@ class tetrisGame extends HTMLElement {
     startGame() {
         setupGameState(this,0);
         this.state.tetromino.current = new Z_Block(this);
-        this.state.tetromino.current.softDrop();
-        this.state.tetromino.current.softDrop();
+        //this.state.tetromino.current.hardDrop();
+        //this.state.tetromino.current.softDrop();
         this.gameState.addTetromino(this.state.tetromino.current);
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
@@ -85,7 +91,7 @@ class tetrisGame extends HTMLElement {
         if(!this.state.timeVars.lastActivePieceDrop || now - this.state.timeVars.lastActivePieceDrop >= 1000) {
             this.state.timeVars.lastActivePieceDrop = now;
             //this.state.tetromino.current.rotateRight();
-            this.state.tetromino.current.rotateLeft();
+            //this.state.tetromino.current.rotateLeft();
             //this.state.tetromino.current.softDrop();
         }
         this.gameState.renderBlocks();

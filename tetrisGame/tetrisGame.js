@@ -1,13 +1,12 @@
 import {html, render} from 'https://esm.run/lit-html@1';
 import { GameState } from './GameState.js';
 import { setupGameState } from './testTetrisGame.js';
-import { I_Block, J_Block, L_Block, O_Block, S_Block, T_Block, Z_Block } from './Tetrominoes.js';
 
 class tetrisGame extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
-        this.gameState = new GameState();
+        this.gameState = new GameState(this);
         this.state = {};
         this.initState();
         this.draw();
@@ -48,10 +47,6 @@ class tetrisGame extends HTMLElement {
             height: verticalBlocksNum,
         };
 
-        this.state.timeVars = {
-            lastActivePieceDrop: 0,
-        };
-
         this.state.dropIntervalDelay = {
             default: 1000,
             soft: 300,
@@ -79,21 +74,15 @@ class tetrisGame extends HTMLElement {
     }
 
     startGame() {
-        setupGameState(this,0);
-        this.state.tetromino.current = new Z_Block(this);
+        //setupGameState(this,0);
+        this.gameState.createNewTetromino();
         //this.state.tetromino.current.hardDrop();
         //this.state.tetromino.current.softDrop();
-        this.gameState.addTetromino(this.state.tetromino.current);
+        //this.gameState.addTetromino(this.state.tetromino.current);
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
 
     update(now) {
-        if(!this.state.timeVars.lastActivePieceDrop || now - this.state.timeVars.lastActivePieceDrop >= 1000) {
-            this.state.timeVars.lastActivePieceDrop = now;
-            //this.state.tetromino.current.rotateRight();
-            //this.state.tetromino.current.rotateLeft();
-            //this.state.tetromino.current.softDrop();
-        }
         this.gameState.renderBlocks();
     }
 

@@ -13,6 +13,22 @@ class Tetromino {
         this.checkGameOver();
     }
 
+    moveRight() {
+        this.blockList.forEach((bl)=> bl.x++);
+        let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
+        if(isColliding) {
+            this.blockList.forEach((bl)=> bl.x--);
+        }
+    }
+
+    moveLeft() {
+        this.blockList.forEach((bl)=> bl.x--);
+        let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
+        if(isColliding) {
+            this.blockList.forEach((bl)=> bl.x++);
+        }
+    }
+
     rotateRight() {
         let beta = Math.PI/2;
         this.rotate(beta);
@@ -24,6 +40,17 @@ class Tetromino {
     }
 
     rotate(beta) {
+        let didRotate = true;
+        this.tryRotate(beta);
+        let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
+        if(isColliding) {
+            this.tryRotate(-beta);
+            didRotate = false;
+        }
+        return didRotate;
+    }
+
+    tryRotate(beta) {
         let originX = this.origin.x;
         let originY = this.origin.y;
         this.blockList.forEach((bl) => {
@@ -42,28 +69,35 @@ class Tetromino {
 
     defaultDrop() {
         clearInterval(this.intervalID);
-        this.intervalID = setInterval(() => {
-            this.blockList.forEach((bl)=> bl.y++);
-            this.tetrisGame.gameState.checkCollision(this.blockList);
-        }, this.tetrisGame.state.dropIntervalDelay.default);
+        this.intervalID = setInterval(this.drop.bind(this), this.tetrisGame.state.dropIntervalDelay.default);
     }
 
     softDrop() {
         clearInterval(this.intervalID);
-        this.intervalID = setInterval(() => {
-            this.blockList.forEach((bl)=> bl.y++);
-        }, this.tetrisGame.state.dropIntervalDelay.soft);
+        this.intervalID = setInterval(this.drop.bind(this), this.tetrisGame.state.dropIntervalDelay.soft);
     }
 
     hardDrop() {
         clearInterval(this.intervalID);
-        this.intervalID = setInterval(() => {
-            this.blockList.forEach((bl)=> bl.y++);
-        }, this.tetrisGame.state.dropIntervalDelay.hard);
+        this.intervalID = setInterval(this.drop.bind(this), this.tetrisGame.state.dropIntervalDelay.hard);
+    }
+
+    drop() {
+        this.blockList.forEach((bl)=> bl.y++);
+        let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
+        if(isColliding) {
+            this.blockList.forEach((bl)=> bl.y--);
+            clearInterval(this.intervalID);
+            this.tetrisGame.gameState.createNewTetromino();
+        }
     }
 
     checkGameOver() {
         console.log('checkGameOver');
+        let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
+        if(isColliding) {
+            clearInterval(this.intervalID);
+        }
     }
 }
 
@@ -89,14 +123,17 @@ export class I_Block extends Tetromino {
     rotateLeft() {this.sameRotate()}
 
     sameRotate() {
+        let didRotate;
         if (this.isHorizontal) {
             let beta = Math.PI/2;
-            this.rotate(beta);
+            didRotate = this.rotate(beta);
         } else {
             let beta = -Math.PI/2;
-            this.rotate(beta);
+            didRotate = this.rotate(beta);
         }
-        this.isHorizontal = !this.isHorizontal;
+        if (didRotate) {
+            this.isHorizontal = !this.isHorizontal;
+        }
     }
 }
 
@@ -177,14 +214,17 @@ export class S_Block extends Tetromino {
     rotateLeft() {this.sameRotate()}
 
     sameRotate() {
+        let didRotate;
         if (this.isHorizontal) {
             let beta = -Math.PI/2;
-            this.rotate(beta);
+            didRotate = this.rotate(beta);
         } else {
             let beta = Math.PI/2;
-            this.rotate(beta);
+            didRotate = this.rotate(beta);
         }
-        this.isHorizontal = !this.isHorizontal;
+        if (didRotate) {
+            this.isHorizontal = !this.isHorizontal;
+        }
     }
 }
 
@@ -227,13 +267,16 @@ export class Z_Block extends Tetromino {
     rotateLeft() {this.sameRotate()}
 
     sameRotate() {
+        let didRotate;
         if (this.isHorizontal) {
             let beta = -Math.PI/2;
-            this.rotate(beta);
+            didRotate = this.rotate(beta);
         } else {
             let beta = Math.PI/2;
-            this.rotate(beta);
+            didRotate = this.rotate(beta);
         }
-        this.isHorizontal = !this.isHorizontal;
+        if (didRotate) {
+            this.isHorizontal = !this.isHorizontal;
+        }
     }
 }

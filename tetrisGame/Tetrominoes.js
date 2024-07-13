@@ -4,16 +4,21 @@ import { COLORS } from "./Colors.js";
 class Tetromino {
     constructor(tetrisGame) {
         this.tetrisGame = tetrisGame;
-        this.intervalID = null;
         this.blockList = [];
+        this.lastPieceDrop = 0;
+        this.dropDelay = 0;
+        this.freeze = false;
     }
 
     childConstructorComplete() {
         this.defaultDrop();
-        this.checkGameOver();
+        this.lastPieceDrop = this.tetrisGame.state.timeStamp;
     }
 
     moveRight() {
+        if (this.freeze) {
+            return;
+        }
         this.blockList.forEach((bl)=> bl.x++);
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
         if(isColliding) {
@@ -22,6 +27,9 @@ class Tetromino {
     }
 
     moveLeft() {
+        if (this.freeze) {
+            return;
+        }
         this.blockList.forEach((bl)=> bl.x--);
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
         if(isColliding) {
@@ -40,6 +48,9 @@ class Tetromino {
     }
 
     rotate(beta) {
+        if (this.freeze) {
+            return false;
+        }
         let didRotate = true;
         this.tryRotate(beta);
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
@@ -68,18 +79,15 @@ class Tetromino {
     }
 
     defaultDrop() {
-        clearInterval(this.intervalID);
-        this.intervalID = setInterval(this.drop.bind(this), this.tetrisGame.state.dropIntervalDelay.default);
+        this.dropDelay = this.tetrisGame.state.dropIntervalDelay.default;
     }
 
     softDrop() {
-        clearInterval(this.intervalID);
-        this.intervalID = setInterval(this.drop.bind(this), this.tetrisGame.state.dropIntervalDelay.soft);
+        this.dropDelay = this.tetrisGame.state.dropIntervalDelay.soft;
     }
 
     hardDrop() {
-        clearInterval(this.intervalID);
-        this.intervalID = setInterval(this.drop.bind(this), this.tetrisGame.state.dropIntervalDelay.hard);
+        this.dropDelay = this.tetrisGame.state.dropIntervalDelay.hard;
     }
 
     drop() {
@@ -87,8 +95,18 @@ class Tetromino {
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
         if(isColliding) {
             this.blockList.forEach((bl)=> bl.y--);
-            clearInterval(this.intervalID);
+            this.freeze = true;
             this.tetrisGame.gameState.createNewTetromino();
+        }
+    }
+
+    updateDrop() {
+        if (this.freeze) {
+            return;
+        }
+        if(this.tetrisGame.state.timeStamp - this.lastPieceDrop >= this.dropDelay) {
+            this.lastPieceDrop = this.tetrisGame.state.timeStamp;
+            this.drop();
         }
     }
 
@@ -96,7 +114,7 @@ class Tetromino {
         console.log('checkGameOver');
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
         if(isColliding) {
-            clearInterval(this.intervalID);
+            this.freeze = true;
         }
     }
 }

@@ -9,10 +9,8 @@ export class GameState {
 
     createNewTetromino() {
         this.tetrisGame.state.tetromino.current = this.getRandomTetromino();
-        let isColliding = this.checkCollision(this.tetrisGame.state.tetromino.current.blockList,1);
-        if (!isColliding) {
-            this.addTetromino(this.tetrisGame.state.tetromino.current);
-        }
+        this.addTetromino(this.tetrisGame.state.tetromino.current);
+        this.tetrisGame.state.tetromino.current.checkGameOver();
     }
 
     getRandomTetromino() {
@@ -39,7 +37,12 @@ export class GameState {
         this.blockList.forEach((bl)=> bl.update());
     }
 
-    checkCollision(blocks, resultsLength=2) {
+    updateLogic() {
+        this.tetrisGame.state.tetromino.current.updateDrop();
+        //console.log(this.tetrisGame.state.timeStamp);
+    }
+
+    checkCollision(blocks) {
         let flag = false;
         for (let i = 0; i < blocks.length; i++) {
             const bl = blocks[i];
@@ -52,7 +55,7 @@ export class GameState {
                 break;
             }
             let results = this.blockList.filter((blAll) => blAll.x === bl.x && blAll.y === bl.y);
-            if(results.length >= resultsLength) {
+            if(results.length >= 2) {
                 flag = true;
                 break;
             }

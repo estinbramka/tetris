@@ -57,6 +57,8 @@ class tetrisGame extends HTMLElement {
             current: null,
             next: null,
         }
+
+        this.state.timeStamp = 0;
         //console.log(this.state);
     }
 
@@ -75,14 +77,12 @@ class tetrisGame extends HTMLElement {
 
     startGame() {
         //setupGameState(this,0);
-        this.gameState.createNewTetromino();
-        //this.state.tetromino.current.hardDrop();
-        //this.state.tetromino.current.softDrop();
-        //this.gameState.addTetromino(this.state.tetromino.current);
+        this.state.timeStamp = 0;
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
 
-    update(now) {
+    update() {
+        this.gameState.updateLogic();
         this.gameState.renderBlocks();
     }
 
@@ -92,8 +92,14 @@ class tetrisGame extends HTMLElement {
 
     updateGameAreaBind = this.updateGameArea.bind(this);
     updateGameArea(timeStamp) {
+        if(this.state.timeStamp === 0) {
+            this.state.timeStamp = timeStamp;
+            this.gameState.createNewTetromino();
+        } else {
+            this.state.timeStamp = timeStamp;
+        }
         this.clear();
-        this.update(timeStamp);
+        this.update();
         window.requestAnimationFrame(this.updateGameAreaBind);
     }
 }

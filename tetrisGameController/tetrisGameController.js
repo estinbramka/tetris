@@ -10,6 +10,7 @@ class tetrisGameController extends HTMLElement {
 
     connectedCallback() {
         document.addEventListener('keydown', this.keydown.bind(this));
+        document.addEventListener('keyup', this.keyup.bind(this));
     }
 
     draw() {
@@ -34,8 +35,25 @@ class tetrisGameController extends HTMLElement {
             case 38://up arrow
             this.tetrisGame.state.tetromino.current.rotateRight();
                 break;
+            case 40://down arrow
+            this.tetrisGame.state.tetromino.current.softDrop();
+                break;
+            case 90://z
+            this.tetrisGame.state.tetromino.current.rotateLeft();
+                break;
             case 32://space
             this.tetrisGame.state.tetromino.current.hardDrop();
+                break;
+            default:
+                break;
+        }
+    }
+
+    keyup(e) {
+        //console.log(e.keyCode)
+        switch (e.keyCode) {
+            case 40://down arrow
+            this.tetrisGame.state.tetromino.current.defaultDrop();
                 break;
             default:
                 break;

@@ -5,14 +5,14 @@ class Tetromino {
     constructor(tetrisGame) {
         this.tetrisGame = tetrisGame;
         this.blockList = [];
-        this.lastPieceDrop = 0;
+        this.lastUpdateDrop = 0;
         this.dropDelay = 0;
         this.freeze = false;
     }
 
     childConstructorComplete() {
         this.defaultDrop();
-        this.lastPieceDrop = this.tetrisGame.state.timeStamp;
+        this.lastUpdateDrop = this.tetrisGame.state.timeStamp;
     }
 
     moveRight() {
@@ -79,14 +79,23 @@ class Tetromino {
     }
 
     defaultDrop() {
+        if (this.tetrisGame.state.dropIntervalDelay.default < this.dropDelay) {
+            this.lastUpdateDrop = this.tetrisGame.state.timeStamp - this.tetrisGame.state.dropIntervalDelay.default;
+        }
         this.dropDelay = this.tetrisGame.state.dropIntervalDelay.default;
     }
 
     softDrop() {
+        if (this.tetrisGame.state.dropIntervalDelay.soft < this.dropDelay) {
+            this.lastUpdateDrop = this.tetrisGame.state.timeStamp - this.tetrisGame.state.dropIntervalDelay.soft;
+        }
         this.dropDelay = this.tetrisGame.state.dropIntervalDelay.soft;
     }
 
     hardDrop() {
+        if (this.tetrisGame.state.dropIntervalDelay.hard < this.dropDelay) {
+            this.lastUpdateDrop = this.tetrisGame.state.timeStamp - this.tetrisGame.state.dropIntervalDelay.hard;
+        }
         this.dropDelay = this.tetrisGame.state.dropIntervalDelay.hard;
     }
 
@@ -97,21 +106,31 @@ class Tetromino {
             this.blockList.forEach((bl)=> bl.y--);
             this.freeze = true;
             this.tetrisGame.gameState.createNewTetromino();
+            return false;
         }
+        return true;
     }
 
     updateDrop() {
         if (this.freeze) {
             return;
         }
-        if(this.tetrisGame.state.timeStamp - this.lastPieceDrop >= this.dropDelay) {
-            this.lastPieceDrop = this.tetrisGame.state.timeStamp;
-            this.drop();
+        if(this.tetrisGame.state.timeStamp - this.lastUpdateDrop >= this.dropDelay) {
+            let timePassedSinceLastUpdate = this.tetrisGame.state.timeStamp - this.lastUpdateDrop;
+            let dropCount = Math.floor(timePassedSinceLastUpdate/this.dropDelay);
+            for (let i = 0; i < dropCount; i++) {
+                if (!this.drop()) {
+                    return;
+                }
+            }
+            let timeLeft = timePassedSinceLastUpdate - dropCount*this.dropDelay;
+            this.lastUpdateDrop = this.tetrisGame.state.timeStamp - timeLeft;
+            //console.log(this.lastUpdateDrop);
         }
     }
 
     checkGameOver() {
-        console.log('checkGameOver');
+        //console.log('checkGameOver');
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
         if(isColliding) {
             this.freeze = true;

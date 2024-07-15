@@ -50,7 +50,7 @@ class tetrisGame extends HTMLElement {
         this.state.dropIntervalDelay = {
             default: 1000,
             soft: 300,
-            hard: 0,
+            hard: 5,
         };
 
         this.state.tetromino = {

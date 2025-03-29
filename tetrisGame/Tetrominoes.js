@@ -99,19 +99,20 @@ class Tetromino {
         this.dropDelay = this.tetrisGame.state.dropIntervalDelay.hard;
     }
 
-    drop() {
+    async drop() {
         this.blockList.forEach((bl)=> bl.y++);
         let isColliding = this.tetrisGame.gameState.checkCollision(this.blockList);
         if(isColliding) {
             this.blockList.forEach((bl)=> bl.y--);
             this.freeze = true;
+            await this.tetrisGame.gameState.checkLineDelete();
             this.tetrisGame.gameState.createNewTetromino();
             return false;
         }
         return true;
     }
 
-    updateDrop() {
+    async updateDrop() {
         if (this.freeze) {
             return;
         }
@@ -119,7 +120,7 @@ class Tetromino {
             let timePassedSinceLastUpdate = this.tetrisGame.state.timeStamp - this.lastUpdateDrop;
             let dropCount = Math.floor(timePassedSinceLastUpdate/this.dropDelay);
             for (let i = 0; i < dropCount; i++) {
-                if (!this.drop()) {
+                if (!await this.drop()) {
                     return;
                 }
             }

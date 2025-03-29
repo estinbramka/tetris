@@ -63,4 +63,27 @@ export class GameState {
         //console.log(flag);
         return flag;
     }
+
+    async checkLineDelete() {
+        for (let row = this.tetrisGame.state.blockNums.height-1; row >= 0; row--) {
+            let isFilled = true;
+            for (let col = 0; col < this.tetrisGame.state.blockNums.width; col++) {
+                let results = this.blockList.filter((blAll) => blAll.x === col && blAll.y === row);
+                if (results.length === 0) {
+                    isFilled = false
+                }
+            }
+            //console.log(row,isFilled);
+            if(isFilled){
+                for (let col = 0; col < this.tetrisGame.state.blockNums.width; col++){
+                    let index = this.blockList.findIndex((blAll) => blAll.x === col && blAll.y === row)
+                    this.blockList.splice(index,1);
+                    await new Promise(r => setTimeout(r, 40));
+                }
+                this.blockList.filter((blAll) =>blAll.y < row).forEach((bl)=> bl.y++);
+                row = this.tetrisGame.state.blockNums.height;
+            }
+        }
+        //console.log(this.blockList);
+    }
 }

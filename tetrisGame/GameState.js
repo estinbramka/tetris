@@ -8,9 +8,16 @@ export class GameState {
     }
 
     createNewTetromino() {
-        this.tetrisGame.state.tetromino.current = this.getRandomTetromino();
+        if (this.tetrisGame.state.tetromino.next === null) {
+            this.tetrisGame.state.tetromino.current = this.getRandomTetromino();
+            this.tetrisGame.state.tetromino.next = this.getRandomTetromino();
+        }else {
+            this.tetrisGame.state.tetromino.current = new this.tetrisGame.state.tetromino.next.constructor(this.tetrisGame);
+            this.tetrisGame.state.tetromino.next = this.getRandomTetromino();
+        }
         this.addTetromino(this.tetrisGame.state.tetromino.current);
         this.tetrisGame.state.tetromino.current.checkGameOver();
+        this.renderNextTetromino();
     }
 
     getRandomTetromino() {
@@ -35,6 +42,25 @@ export class GameState {
 
     renderBlocks() {
         this.blockList.forEach((bl)=> bl.update());
+    }
+
+    renderNextTetromino(){
+        //console.log(this.tetrisGame.state.tetromino.current.constructor.name)
+        let temp = this.tetrisGame.ctx;
+        this.tetrisGame.ctx = this.tetrisGame.ctxNextTetromino;
+        let displayNextTetromino = new this.tetrisGame.state.tetromino.next.constructor(this.tetrisGame);
+        let minX = Math.min(...displayNextTetromino.blockList.map(bl=>bl.x))
+        displayNextTetromino.blockList.forEach((bl)=> bl.x=bl.x-minX);
+        let maxX = Math.max(...displayNextTetromino.blockList.map(bl=>bl.x)) + 1;
+        let centerX = 2.5 - (maxX/2);
+        displayNextTetromino.blockList.forEach((bl)=> bl.x=bl.x+centerX);
+        let maxY = Math.max(...displayNextTetromino.blockList.map(bl=>bl.y)) + 1;
+        let centerY = 2.5 - (maxY/2);
+        displayNextTetromino.blockList.forEach((bl)=> bl.y=bl.y+centerY);
+        this.tetrisGame.ctx.clearRect(0, 0, this.tetrisGame.state.nextTetrominoCanvasDim.width, this.tetrisGame.state.nextTetrominoCanvasDim.height);
+        displayNextTetromino.blockList.forEach((bl)=> bl.update());
+        //console.log(displayNextTetromino);
+        this.tetrisGame.ctx = temp;
     }
 
     updateLogic() {

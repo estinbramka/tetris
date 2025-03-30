@@ -59,13 +59,29 @@ class tetrisGame extends HTMLElement {
         }
 
         this.state.timeStamp = 0;
+
+        this.state.nextTetrominoCanvasDim = {
+            width: blockWidth * 5,
+            height: blockHeight * 5,
+        };
         //console.log(this.state);
     }
 
     draw() {
         const template = html`
-        <div class="mainContainer">
-            <canvas id="tetrisCanvas" width="${this.state.canvasDim.width}" height="${this.state.canvasDim.height}" style="border:1px solid #000000;"></canvas>
+        <style>
+            canvas {
+                border: 1px solid #000000;
+            }
+            .mainContainer {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        </style>
+        <div class="mainContainer d-flex">
+            <canvas id="tetrisCanvas" width="${this.state.canvasDim.width}" height="${this.state.canvasDim.height}"></canvas>
+            <canvas id="nextTetrominoCanvas" width="${this.state.nextTetrominoCanvasDim.width}" height="${this.state.nextTetrominoCanvasDim.height}"></canvas>
         </div>
         `;
         render(template, this.shadowRoot);
@@ -73,6 +89,10 @@ class tetrisGame extends HTMLElement {
         let c = this.shadowRoot.querySelector("#tetrisCanvas");
         let ctx = c.getContext("2d");
         this.ctx = ctx;
+
+        let cNextTetromino = this.shadowRoot.querySelector("#nextTetrominoCanvas");
+        let ctxNextTetromino = cNextTetromino.getContext("2d");
+        this.ctxNextTetromino = ctxNextTetromino;
     }
 
     startGame() {
